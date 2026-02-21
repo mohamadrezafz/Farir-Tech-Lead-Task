@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Echo": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:8082"
+    }
+  }
+}

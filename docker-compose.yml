@@ -1,0 +1,29 @@
+services:
+  solution:
+    build:
+      context: .
+      dockerfile: src/Solution/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+
+  echo:
+    build:
+      context: .
+      dockerfile: src/Echo/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+
+  producer:
+    build:
+      context: .
+      dockerfile: src/Producer/Dockerfile
+    environment:
+      - Webhooks__Urls=http://solution:8080/webhook,http://echo:8080/webhook
+      - Producer__IntervalSeconds=2
+    depends_on:
+      - solution
+      - echo
