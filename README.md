@@ -18,10 +18,16 @@ So **tickets** in your system come from: (1) tickets you create when a speed rea
 
 ## Acceptance Criteria
 
-- **Producer**: Generates CarGenerated, SpeedRecorded, and ManualTicket; sends each event to every configured webhook URL; runs in Docker.
-- **Solution**: Receives webhook events; stores cars (with deduplication), speed readings, and tickets; creates a ticket when SpeedRecorded has speed > 110; stores ManualTicket events as tickets; exposes the two APIs described in [src/Solution/README.md](src/Solution/README.md) (list tickets with date filter; car speed stats for latest X minutes). You may use any SQL database you want (not required to use in-memory only).
-- **Echo**: Receives the same webhook calls and logs date + body to the console, so you can see the events the Producer is sending.
-- **Docker Compose**: All three services run via `docker compose up`; Producer's webhook URLs are configured in `docker-compose.yml` so it sends to both Solution and Echo.
+**You only implement the Solution.** Producer, Echo, and Docker Compose are provided and remain untouched.
+
+Your **Solution** must:
+
+- Receive webhook events at `POST /webhook` and handle the three event types (CarGenerated, SpeedRecorded, ManualTicket).
+- Store cars with deduplication (same car can be sent multiple times; keep one record per car).
+- Store speed readings; when a SpeedRecorded event has **speed > 110**, create and store a ticket.
+- Store ManualTicket events as tickets.
+- Expose the two APIs described in [src/Solution/README.md](src/Solution/README.md): (1) list all tickets with an optional date filter, (2) for a car and a time window (e.g. latest X minutes), return average, max, and min speed.
+- Use any SQL database you prefer (in-memory only is not required).
 
 ## Configuration
 
