@@ -31,3 +31,18 @@ The Producer sends JSON events to `POST /webhook`. There are three event types; 
 3. **API – Car speed statistics**: Expose an API that, for a given car (e.g. by `carId`) and a time window (e.g. "latest X minutes"), returns the **average**, **max**, and **min** speed for that car in that window. Exact path and parameters are up to you (e.g. `GET /api/cars/{carId}/speed-stats?minutes=30` returning something like `{ "avg": 95, "max": 120, "min": 72 }`).
 
 Implement the webhook handling and both APIs in this project. Use the SQL database of your choice for persistence.
+
+
+
+
+## Implementation (this solution)
+
+- **Stack**: .NET 8, ASP.NET Core minimal APIs, EF Core 8, SQLite.
+- **Webhook**: `POST /webhook` — accepts the three event types; responds 200 on success, 400 for invalid payload, 500 server error.
+- 
+- **APIs**:
+  - `GET /api/tickets?from={iso8601}&to={iso8601}` — list all tickets; `from` and `to` are optional (UTC).
+  - `GET /api/cars/{carId}/speed-stats?minutes=30` — returns `{ "avg", "max", "min" }` for the last N minutes (default 30; max 10080).
+- **Persistence**: SQLite file `solution.db`. Connection string: `ConnectionStrings:DefaultConnection` (env or appsettings).
+- **Swagger**: When running, open **http://localhost:8081/swagger** (or the Solution base URL) for interactive API docs.
+- **Design**: DbContext factory for concurrent webhook handling; deduplication for cars (by `carId`) and manual tickets (by `ticketId`); stub car created if SpeedRecorded or ManualTicket arrives for an unknown car so no event is dropped.
